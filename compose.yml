@@ -1,0 +1,40 @@
+services:
+  mariadb-adriyan:
+    build:
+      context: .
+      dockerfile: mariadb.Containerfile
+    container_name: mariadb-adriyan
+    environment:
+      MYSQL_ROOT_PASSWORD: 11223344
+      MYSQL_DATABASE: consult_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql:Z
+
+  php-apache-adriyan:
+    build:
+      context: .
+      dockerfile: php-apache.Containerfile
+    container_name: php-apache-adriyan
+    ports:
+      - "8001:80"
+    volumes:
+      - ./app:/var/www/html:Z
+    depends_on:
+      - mariadb-adriyan
+
+  phpmyadmin-adriyan:
+    image: docker.io/phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-adriyan
+    restart: always
+    ports:
+      - "8002:80"
+    environment:
+      PMA_HOST: mariadb-adriyan
+      MYSQL_ROOT_PASSWORD: 11223344
+    depends_on:
+      - mariadb-adriyan
+
+volumes:
+  mariadb-data: {}
